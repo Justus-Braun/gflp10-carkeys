@@ -1,7 +1,7 @@
 ## gflp10-carkeys
 
-This ressource can be used to lock and unlock vehicles
-
+This ressource can be used to lock and unlock vehicles <br>
+Start this script before ox_inventory or it could cause problems
 
 
 ### Setup
@@ -24,12 +24,10 @@ Item('carkey', function(data, slot)
 	TriggerEvent('carkeys:client:useKey', slot)
 end)
 ```
-
-Start this script before ox_inventory or it could cause problems
  
 If you want to add keys to a Inventory use the export AddCarkey on Serverside
 ```lua
 local playerId = 1
 local plate = "ABC 123"
-exports['gflp10-carkeys']:AddCarkey(playerId, plate)
+exports['gflp10-carkeys']:addCarkey(playerId, plate)
 ```
