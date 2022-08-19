@@ -3,118 +3,87 @@ CreateThread(function()
         Wait(100)
     end
     local Inventory = exports.ox_inventory
-    Inventory:displayMetadata('plate', 'Plate')
+    Inventory:displayMetadata('plate', Lang['plate'])
+end)
+
+CreateThread(function()
+    while GetResourceState('qtarget') ~= 'started' do
+        Wait(100)
+    end
+
+    local Qtarget = exports.qtarget
+
+    local pedHash = GetHashKey(Config.KeyShop.Ped.Model)
+
+    RequestModel(pedHash)                      
+    while not HasModelLoaded(pedHash) do Wait(1) end
+
+    local ped = CreatePed(4, pedHash, Config.KeyShop.Ped.Position, false, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+
+    Qtarget:AddTargetEntity(ped, {
+        options = {
+            {
+                action = function(data)
+                    OpenKeyShop()
+                end,
+                icon = 'fas fa-key',
+                label = Lang['open_keyshop']
+            }
+        },
+        distance = 1.5
+    })
+end)
+
+CreateThread(function()
+    local blip = AddBlipForCoord(Config.KeyShop.Ped.Position)
+    SetBlipSprite(blip, 811)
+    SetBlipScale(blip, 0.8)
+    SetBlipAsShortRange(blip, true)
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentString(Lang['shop_title'])
+    EndTextCommandSetBlipName(blip)
 end)
 
 AddEventHandler('carkeys:client:useKey', function(data)
     local plate = data.metadata.plate
     local ped = PlayerPedId()
 
-    local vehicle = GetVehicleInDistanceByPlate(plate, Config.LockingRange)
+    while #plate < 8 do
+        plate = plate .. ' '
+    end
 
-    ToggleVehicleLock(vehicle)
+    local vehicle = GetVehicleInDistanceByPlate(plate, Config.LockingRange)
+    if vehicle then
+        ToggleVehicleLock(vehicle)
+    end
+
 end)
 
-local function IsVehicleLocked(vehicle)
-    local status = GetVehicleDoorLockStatus(vehicle)
-    if status == 2 then 
-        return true
-    end
-    return false 
-end
+AddEventHandler('carkeys:context:yesno', function(data)
+    lib.hideContext(false)
+    lib.registerContext({
+        id = 'carkeys_yesno_menu',
+        title = Lang['buy_key'],
+        options = {
+            {
+                title = Lang['yes'],
+                event = 'carkeys:client:buyKey',
+                args = {
+                    plate = data.plate
+                }
+            },
+            {
+                title = Lang['no'],
+                menu = 'carkeys_context_shop'
+            }
+        }
+    })
+    lib.showContext('carkeys_yesno_menu')
+end)
 
-local function LockStartAnim(ped, animDict, animLib, vehicle)
-    TaskPlayAnim(ped, animDict, animLib, 15.0, -10.0, 1500, 49, 0, false, false, false)
-    PlaySoundFromEntity(-1, "Remote_Control_Fob", ped, "PI_Menu_Sounds", 1, 0)
-    
-    SetVehicleLights(vehicle,2)
-    Wait(200)
-
-    SetVehicleLights(vehicle,1)
-    Wait(200)
-
-    SetVehicleLights(vehicle,2)        
-    Wait(200)
-end
-
-local function LockEndAnim(vehicle)
-    Wait(200)
-    SetVehicleLights(vehicle,1)
-    SetVehicleLights(vehicle,0)
-    Wait(200)
-end
-
-local function GetVehiclesInArea(maxDistance)
-    local vehicles = GetGamePool('CVehicle')
-
-    local playerPed = PlayerPedId()
-    local coords = GetEntityCoords(playerPed)
-    
-    local nearbyVehicles = {}
-    
-    for k, entity in pairs(vehicles) do
-        local distance = #(coords - GetEntityCoords(entity))
-
-        if distance <= maxDistance then
-            nearbyVehicles[#nearbyVehicles + 1] = entity
-        end
-    end
-
-    return nearbyVehicles
-end
-
-function GetVehicleInDistanceByPlate(plate, maxDistance)
-    local vehicles = GetVehiclesInArea(maxDistance)
-
-    for k, vehicle in pairs(vehicles) do
-        local vehiclePlate = GetVehicleNumberPlateText(vehicle)
-        if vehiclePlate == plate then
-            return vehicle
-        end
-    end
-end
-
-function ToggleVehicleLock(vehicle)
-	local ped = PlayerPedId()
-    local isCycle = GetVehicleClass(vehicle) == Config.CycleVehicleClass
-    local locked = IsVehicleLocked(vehicle)
-    local keyFob = nil
-
-    if not isCycle then 
-        local prop = GetHashKey('p_car_keys_01')
-        local animDict = 'anim@mp_player_intmenu@key_fob@'
-        local animLib = 'fob_click'
-    
-        RequestModel(prop)
-        while not HasModelLoaded(prop) do Wait(1) end
-
-        RequestAnimDict(animDict)
-        while not HasAnimDictLoaded(animDict) do Wait(1) end
-        
-        keyFob = CreateObject(prop, 1.0, 1.0, 1.0, 1, 1, 0)
-        AttachEntityToEntity(keyFob, ped, GetPedBoneIndex(ped, 57005), 0.09, 0.04, 0.0, 0.0, 0.0, 0.0, true, true, false, true, 1, true)
-        
-        LockStartAnim(ped, animDict, animLib, vehicle)
-    end
-        
-	if locked then
-		SetVehicleDoorsLocked(vehicle, 1)
-        if not isCycle then
-            PlayVehicleDoorOpenSound(vehicle, 0)
-            PlaySoundFromEntity(-1, "Remote_Control_Open", car, "PI_Menu_Sounds", 1, 0)
-        end
-		Config.Notification(Lang['unlock_vehicle'])
-	elseif not locked then
-		SetVehicleDoorsLocked(vehicle, 2)
-        if not isCycle then
-            PlayVehicleDoorCloseSound(vehicle, 0)
-            PlaySoundFromEntity(-1, "Remote_Control_Close", car, "PI_Menu_Sounds", 1, 0)
-        end
-		Config.Notification(Lang['lock_vehicle'])
-	end
-
-    if not isCycle then	
-        LockEndAnim(vehicle)
-        DeleteEntity(keyFob)
-    end
-end
+AddEventHandler('carkeys:client:buyKey', function(data)
+    TriggerServerEvent('carkeys:server:buyKey', data.plate)
+end)
