@@ -7,11 +7,9 @@ CreateThread(function()
 end)
 
 CreateThread(function()
-    while GetResourceState('qtarget') ~= 'started' do
+    while GetResourceState('ox_target') ~= 'started' do
         Wait(100)
     end
-
-    local Qtarget = exports.qtarget
 
     local pedHash = GetHashKey(Config.KeyShop.Ped.Model)
 
@@ -23,17 +21,14 @@ CreateThread(function()
     SetEntityInvincible(ped, true)
     SetBlockingOfNonTemporaryEvents(ped, true)
 
-    Qtarget:AddTargetEntity(ped, {
-        options = {
-            {
-                action = function(data)
-                    OpenKeyShop()
-                end,
-                icon = 'fas fa-key',
-                label = Lang['open_keyshop']
-            }
-        },
-        distance = 1.5
+    exports.ox_target:addModel(Config.KeyShop.Ped.Model, {
+        {
+            icon = 'fas fa-key',
+            label = Lang['open_keyshop'],
+            onSelect = function()
+				OpenKeyShop()
+			end,
+        }
     })
 end)
 
