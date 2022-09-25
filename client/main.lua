@@ -7,6 +7,38 @@ CreateThread(function()
 end)
 
 CreateThread(function()
+    while true do
+        Wait(0)
+		local ped = PlayerPedId()
+		local vehicle = GetVehiclePedIsIn(ped, false)
+		local engineStatus
+		
+		if IsPedGettingIntoAVehicle(ped) then
+			engineStatus = (GetIsVehicleEngineRunning(vehicle))
+			if not (engineStatus) then 
+				SetVehicleEngineOn(vehicle, false, true, true)
+				DisableControlAction(2, 71, true)
+			end
+		end
+		
+		if IsPedInAnyVehicle(ped, false) and not IsEntityDead(ped) and (not GetIsVehicleEngineRunning(vehicle)) then
+			DisableControlAction(2, 71, true)
+		end
+		
+		if IsPedInAnyVehicle(ped, false) and IsControlPressed(2, 75) and not IsEntityDead(ped) then
+			if (GetIsVehicleEngineRunning(vehicle)) then
+				Wait(150)
+				SetVehicleEngineOn(vehicle, true, true, false)
+				TaskLeaveVehicle(ped, vehicle, 0)
+			else
+				TaskLeaveVehicle(ped, vehicle, 0)
+			end
+		end
+    end
+end)
+
+
+CreateThread(function()
     while GetResourceState('ox_target') ~= 'started' do
         Wait(100)
     end
@@ -45,16 +77,26 @@ end)
 AddEventHandler('carkeys:client:useKey', function(data)
     local plate = data.metadata.plate
     local ped = PlayerPedId()
+    local veh = GetVehiclePedIsIn(ped)
+    local engineStatus = GetIsVehicleEngineRunning(veh)
 
     while #plate < 8 do
         plate = plate .. ' '
     end
 
     local vehicle = GetVehicleInDistanceByPlate(plate, Config.LockingRange)
-    if vehicle then
+    if vehicle and not IsPedInAnyVehicle(ped, false) then
+        inVehicle = false
         ToggleVehicleLock(vehicle)
+    elseif vehicle and IsPedInAnyVehicle(ped, false) and not engineStatus then
+        SetVehicleEngineOn(vehicle, true, false, true)
+        Config.Notification(Lang['engine_on'])
+    elseif vehicle and IsPedInAnyVehicle(ped, false) and engineStatus then
+        SetVehicleEngineOn(vehicle, false, false, true)
+        Config.Notification(Lang['engine_off'])
+    else
+        Config.Notification(Lang['not_your_vehicle'])
     end
-
 end)
 
 AddEventHandler('carkeys:context:yesno', function(data)
