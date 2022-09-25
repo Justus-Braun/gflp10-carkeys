@@ -34,4 +34,4 @@ local plate = "ABC 123"
 exports['gflp10-carkeys']:AddCarkey(playerId, plate)
 ```
 
-Showcase: https://streamable.com/5diryb by @Fellow25
+Showcase: https://streamable.com/5diryb by [@Fellow25] (https://github.com/Fellow25)
