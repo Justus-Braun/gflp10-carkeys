@@ -6,9 +6,9 @@ CreateThread(function()
     Inventory:displayMetadata('plate', Lang['plate'])
 end)
 
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
-        Citizen.Wait(0)
+        Wait(0)
 		local ped = PlayerPedId()
 		local vehicle = GetVehiclePedIsIn(ped, false)
 		local engineStatus
@@ -27,7 +27,7 @@ Citizen.CreateThread(function()
 		
 		if IsPedInAnyVehicle(ped, false) and IsControlPressed(2, 75) and not IsEntityDead(ped) then
 			if (GetIsVehicleEngineRunning(vehicle)) then
-				Citizen.Wait(150)
+				Wait(150)
 				SetVehicleEngineOn(vehicle, true, true, false)
 				TaskLeaveVehicle(ped, vehicle, 0)
 			else
