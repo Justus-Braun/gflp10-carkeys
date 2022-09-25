@@ -8,7 +8,7 @@ Start this script before ox_inventory or it could cause problems
 Required 
 - ox_inventory
 - ox_lib
-- qtarget
+- oxtarget
 - es_extended
 
 Add the item carkey to ox_inventory/data/items.lua
@@ -33,3 +33,5 @@ local playerId = 1
 local plate = "ABC 123"
 exports['gflp10-carkeys']:AddCarkey(playerId, plate)
 ```
+
+Showcase: https://streamable.com/5diryb by @Fellow25
