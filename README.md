@@ -31,7 +31,7 @@ If you want to add keys to a Inventory use the export AddCarkey on Serverside
 ```lua
 local playerId = 1
 local plate = "ABC 123"
-exports['gflp10-carkeys']:AddCarkey(playerId, plate)
+exports['gflp10-carkeys']:AddCarkey(playerId, plate, model)
 ```
 
 Showcase: https://streamable.com/5diryb by [@Fellow25] (https://github.com/Fellow25)

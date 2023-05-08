@@ -52,11 +52,13 @@ function OpenKeyShop()
     local options = {}
 
     for k, v in pairs(vehicles) do
+        local model = GetLabelText(GetDisplayNameFromVehicleModel(v.model))
         options[v.plate] = {
-            description = GetLabelText(GetDisplayNameFromVehicleModel(v.model)),
+            description = model,
             event = 'carkeys:context:yesno',
             args = {
-                plate = v.plate
+                plate = v.plate,
+                model = model
             },
             arrow = true
         }
