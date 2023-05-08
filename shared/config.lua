@@ -18,7 +18,8 @@ Config = {
             ['not_enough_money'] = 'You do not have enough money',
             ['buy_key'] = 'Do you want to buy a key for your vehicle?',
             ['yes'] = 'Yes',
-            ['no'] = 'No'
+            ['no'] = 'No',
+            ['model'] = 'Model'
         },
         ['fr'] = {
             ['lock_vehicle'] = 'Véhicule verrouillé',
@@ -33,7 +34,8 @@ Config = {
             ['not_enough_money'] = 'Vous n\'avez pas assez d\'argent',
             ['buy_key'] = 'Vous souhaitez acheter une clé pour votre véhicule?',
             ['yes'] = 'Oui',
-            ['no'] = 'Non'
+            ['no'] = 'Non',
+            ['model'] = 'Model'
         },
         ['de'] = {
             ['lock_vehicle'] = 'Fahrzeug abgeschlossen',
@@ -48,7 +50,8 @@ Config = {
             ['not_enough_money'] = 'Du hast nicht genug Geld',
             ['buy_key'] = 'Möchtest du einen Schlüssel für dein Fahrzeug kaufen?',
             ['yes'] = 'Ja',
-            ['no'] = 'Nein'
+            ['no'] = 'Nein',
+            ['model'] = 'Modell'
         }
     },
     Notification = function(message)

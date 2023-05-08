@@ -4,6 +4,7 @@ CreateThread(function()
     end
     local Inventory = exports.ox_inventory
     Inventory:displayMetadata('plate', Lang['plate'])
+    Inventory:displayMetadata('model', Lang['model'])
 end)
 
 CreateThread(function()
@@ -109,7 +110,8 @@ AddEventHandler('carkeys:context:yesno', function(data)
                 title = Lang['yes'],
                 event = 'carkeys:client:buyKey',
                 args = {
-                    plate = data.plate
+                    plate = data.plate,
+                    model = data.model
                 }
             },
             {
@@ -122,5 +124,5 @@ AddEventHandler('carkeys:context:yesno', function(data)
 end)
 
 AddEventHandler('carkeys:client:buyKey', function(data)
-    TriggerServerEvent('carkeys:server:buyKey', data.plate)
+    TriggerServerEvent('carkeys:server:buyKey', data.plate, data.model)
 end)
