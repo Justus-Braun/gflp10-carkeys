@@ -4,6 +4,11 @@ local function AddCarkey(source, plate, model)
 end
 exports('AddCarkey', AddCarkey)
 
+local function RemoveCarkey(source, plate, model)
+    exports.ox_inventory:RemoveItem(source, Config.Keyitem, 1, { plate = plate, model = model })
+end
+exports('RemoveCarkey', RemoveCarkey)
+
 lib.callback.register('carkeys:callback:getPlayerVehicles', function(source, target)
     local xPlayer = ESX.GetPlayerFromId(source)
     local vehicles = {}
